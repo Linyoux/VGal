@@ -23,4 +23,4 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 
 在C:\Users\你的用户名\.EasyOCR\model中，安装craft_mlt_25k，english_g2，zh_sim_g2的PTH文件
 
-安卓源码：https://github.com/Linyoux/VGal/tree/main/Android/app/src/main/java/client/vgal
+安卓源码：https://github.com/Linyoux/VGal_app
