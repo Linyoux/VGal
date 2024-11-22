@@ -10,16 +10,18 @@ root = None
 
 intervalEntry = None
 similarityEntry = None
+threadEntry = None
 
 def button1_action():
     global intervalEntry,similarityEntry,root
 
     interval = float(intervalEntry.get())
-    similarityEntry = float(similarityEntry.get())
+    similarity = float(similarityEntry.get())
+    thread = int(threadEntry.get())
 
     root.destroy()
     start_time = time.time()  # 获取当前时间戳
-    text_groups = videoprocess.process_video(file_path,region,interval,similarityEntry)
+    text_groups = videoprocess.process_video(file_path,region,interval,similarity,thread)
 
 
     if "/" in file_path:
@@ -38,7 +40,7 @@ def reset_action():
 
 
 def show_confirmWindow(tknode,crop_area,file):
-    global file_path,region,root,similarityEntry,intervalEntry
+    global file_path,region,root,similarityEntry,intervalEntry,threadEntry
     region = crop_area
     file_path = file
     root = tk.Toplevel(tknode)
@@ -74,12 +76,21 @@ def show_confirmWindow(tknode,crop_area,file):
     similarityEntry = tk.Entry(root,textvariable=default_value)
     similarityEntry.grid(row=2, column=1, pady=10 )
 
+    label3 = tk.Label(root, text="多线程:")
+    label3.grid(row=3, column=0, pady=10 )  # 添加一些垂直间距
+
+    default_value = tk.StringVar()
+    default_value.set("1")  # 设置默认值
+    # 创建一个输入框
+    threadEntry = tk.Entry(root,textvariable=default_value)
+    threadEntry.grid(row=3, column=1, pady=10 )
+
     # 创建按钮
     button1 = tk.Button(root, text="确定",command=button1_action)
-    button1.grid(row=3, column=0, pady=10 )
+    button1.grid(row=4, column=0, pady=10 )
 
     button2 = tk.Button(root, text="取消", command=reset_action)
-    button2.grid(row=3, column=1, pady=10)
+    button2.grid(row=4, column=1, pady=10)
 
     # 调整行和列的权重，使组件能够在水平和垂直方向上平均分布
     root.rowconfigure(0, weight=1)

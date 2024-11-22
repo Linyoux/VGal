@@ -1,10 +1,12 @@
 # encoding:utf-8
 import re
+from concurrent.futures import ThreadPoolExecutor
 
 import cv2
 import easyocr
 from difflib import SequenceMatcher
 import json
+
 
 class TextGroup:
     def __init__(self):
@@ -16,6 +18,7 @@ def calculate_similarity(str1, str2):
     """计算两个字符串的相似度"""
     return SequenceMatcher(None, str1, str2).ratio()
 
+
 def filter(text):
     japanese_pattern = r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FA5]'
     chinese_pattern = r'[\u4e00-\u9fa5]'
@@ -24,6 +27,7 @@ def filter(text):
     newtext = re.sub(chinese_pattern, "", newtext)
 
     return text != newtext
+
 
 def format_timestamp(seconds):
     """将秒数转换为 HH:MM:SS.milliseconds 格式"""
@@ -34,9 +38,25 @@ def format_timestamp(seconds):
     return f"{hours:02d}:{minutes:02d}:{secs:02d}.{millis:03d}"
 
 
-def process_video(video_path, region, interval=0.5, similarity_threshold=0.6):
+text_results = []
+
+
+def executeOcr(reader, roi, current_timestamp, frame_num, total_frames,batch_size):
+    results = reader.readtext(roi,batch_size=batch_size)
+    current_text = " ".join([result[1] for result in results])
+    if not current_text or not filter(current_text):
+        return
+
+    text_results.append((
+        current_timestamp,
+        current_text
+    ))
+    print(f"正在处理第{frame_num}/{total_frames}帧")
+
+
+def process_video(video_path, region, interval=0.5, similarity_threshold=0.6, batch_size=1):
     """处理视频并提取文本"""
-    reader = easyocr.Reader(['ch_sim', 'en'],download_enabled=False)
+    reader = easyocr.Reader(['ch_sim', 'en'], download_enabled=True)
 
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -47,26 +67,27 @@ def process_video(video_path, region, interval=0.5, similarity_threshold=0.6):
 
     interval_frames = int(fps * interval)
 
-    for frame_num in range(0, total_frames, interval_frames):
-        current_timestamp = frame_num / fps
-        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
-        print(f"正在处理第{frame_num}/{total_frames}帧")
+    with ThreadPoolExecutor(max_workers=batch_size) as executor:
+
+        for frame_num in range(0, total_frames, interval_frames):
+            current_timestamp = frame_num / fps
+            cap.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
+
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            roi = frame[region[1]:region[3],
+                  region[0]:region[2]]
+
+            executor.submit(executeOcr,reader, roi, current_timestamp, frame_num, total_frames,batch_size)
+    cap.release()
 
 
-
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        roi = frame[region[1]:region[3],
-              region[0]:region[2]]
-
-        results = reader.readtext(roi)
-        current_text = " ".join([result[1] for result in results])
-
-        if not current_text or not filter(current_text):
-            continue
-
+    sorted(text_results, key=lambda x: x[0])
+    for text in text_results:
+        current_timestamp = text[0]
+        current_text = text[1]
         if not text_groups:
             new_group = TextGroup()
             new_group.texts.append(current_text)
@@ -87,16 +108,13 @@ def process_video(video_path, region, interval=0.5, similarity_threshold=0.6):
             text_groups.append(new_group)
 
         last_text = current_text
-        #
-        # if frame_num > 50:
-        #     break
 
-    cap.release()
 
     return text_groups
 
-def write_to_script(videoName,text_groups, output_file):
-    with open(output_file,"w",encoding="utf-8") as f:
+
+def write_to_script(videoName, text_groups, output_file):
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write("play " + videoName)
         f.write("\n")
         f.write("proc")
@@ -104,7 +122,7 @@ def write_to_script(videoName,text_groups, output_file):
         f.write("\n")
 
         for i, group in enumerate(text_groups, 1):
-            time = round(group.timestamps[-1],2)
+            time = round(group.timestamps[-1], 2)
             text = group.texts[-1]
 
             f.write("text " + text)
@@ -112,7 +130,6 @@ def write_to_script(videoName,text_groups, output_file):
             f.write("time " + str(time))
             f.write("\n")
             f.write("proc\n\n")
-
 
 
 def write_to_file(text_groups, output_file):
@@ -126,18 +143,19 @@ def write_to_file(text_groups, output_file):
             f.write("\n")
 
             dats.append({
-                "time": round(group.timestamps[-1],2) -0.05,
+                "time": round(group.timestamps[-1], 2),
                 "text": group.texts[-1]
             })
-        with open("script.json","w",encoding="utf-16") as f:
-            json.dump(dats,f,indent=4,ensure_ascii=False)
+        with open("script.json", "w", encoding="utf-16") as f:
+            json.dump(dats, f, indent=4, ensure_ascii=False)
+
 
 def main():
-    video_path = 'b.mp4'  # 替换为你的视频路径
+    video_path = 'game.mp4'  # 替换为你的视频路径
     output_file = 'output.txt'  # 输出文件名
     region = [00, 0, 2560, 496]  # 示例区域，根据实际需求调整
 
-    text_groups = process_video(video_path, region,0.5)
+    text_groups = process_video(video_path, region, 0.5, batch_size=10)
     write_to_file(text_groups, output_file)
 
     print(f"结果已写入 {output_file}")
