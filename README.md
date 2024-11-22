@@ -22,7 +22,7 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 > pip install opencv-contrib-python easyocr Pillow  
 > pip install torch torchvision torchaudio  
 >#以下是GPU版本  
-> pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 xformers==0.0.26 -f https://mirrors.aliyun.com/pytorch-wheels/cu118
+> pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 -f https://mirrors.aliyun.com/pytorch-wheels/cu118
 
 在C:\Users\你的用户名\.EasyOCR\model中，安装craft_mlt_25k，english_g2，zh_sim_g2的PTH文件
 
