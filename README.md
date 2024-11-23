@@ -17,7 +17,7 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 通过magpie缩放，让录屏更高清。
 
 #### 安装：
-
+建议先还原为国内镜像站参考：pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 > pip uninstall opencv-python opencv-python-headless  
 > pip install opencv-contrib-python easyocr Pillow  
 
