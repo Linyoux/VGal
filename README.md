@@ -22,7 +22,7 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 > pip uninstall opencv-python opencv-python-headless  
 > pip install opencv-contrib-python easyocr Pillow  
 
-查看CUDA版本后，选择合适的版本安装pytorch  
+查看GPU的CUDA版本后，选择合适的版本安装pytorch  
 
 > pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 #Cuda版本大于124使用（目前没有镜像站）  
 
