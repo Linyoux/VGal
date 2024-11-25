@@ -1,1 +1,1 @@
-解压下wechatocr/path/WeChatOCR里的zip文件，将里面WeChatOCR.exe放到同一级目录。
+解压wechatocr/path/WeChatOCR里的zip文件。
