@@ -22,7 +22,7 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 > pip uninstall opencv-python opencv-python-headless  
 > pip install opencv-contrib-python Pillow  
 
-选择你要使用的ocr，将他们复制到根目录使用，各自安装流程不同。
+下载源代码后，选择你要使用的OCR，将他们复制到根目录使用（各自OCR安装流程不同）。
 
 #### 其他：
 安卓源码：https://github.com/Linyoux/VGal_app
