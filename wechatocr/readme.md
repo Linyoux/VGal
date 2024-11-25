@@ -1,0 +1,1 @@
+解压下里面的WechatOCR.zip，将WechatOCR.exe放到那个位置。
