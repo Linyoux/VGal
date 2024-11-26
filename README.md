@@ -14,7 +14,7 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 请勿未经录屏者允许而用其录屏。
 
 #### 安装：
-建议使用国内镜像站下载依赖 
+建议使用国内镜像站下载以下通用依赖 
 
 > pip uninstall opencv-python opencv-python-headless  
 > pip install opencv-contrib-python Pillow  
