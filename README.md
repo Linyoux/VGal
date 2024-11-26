@@ -32,3 +32,5 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 4.**剪辑方面**：推荐使用LosslessCut处理，这个剪辑软件不需要重编码视频，免去了冗长的视频剪切和拼接时间，分钟间解决问题。
 ###### 安卓源码：
 https://github.com/Linyoux/VGal_app  
+
+**录屏分享**：https://www.123865.com/s/Jr6qVv-uuaXv  
