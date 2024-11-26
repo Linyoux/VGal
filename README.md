@@ -15,7 +15,7 @@ PC（供给端）：负责录屏，处理分割点。通过OCR识别视频各位
 
 #### 安装：
 建议先换源为国内镜像站，
-参考：pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+（例如：pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/）
 > pip uninstall opencv-python opencv-python-headless  
 > pip install opencv-contrib-python Pillow  
 
